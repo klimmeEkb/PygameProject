@@ -1,5 +1,4 @@
 import pygame
-import random
 
 
 class Board:
@@ -7,28 +6,23 @@ class Board:
 		self.width = 10
 		self.height = 10
 		self.length = 10
-		self.board = [[[(225, 225, 225)] * self.width for _ in range(self.length)]]
-		a = [[(random.choice([(0, 0, 0), (60, 60, 30)]))], [(random.choice([(0, 0, 0), (60, 60, 30)]))], [(random.choice([(0, 0, 0), (60, 60, 30)]))], [(random.choice([(0, 0, 0), (60, 60, 30)]))], [(random.choice([(0, 0, 0), (60, 60, 30)]))]]
-		a *= 2
-		self.board += [[a for _ in range(self.length)] for _ in range(self.height // 2 - 1)]
-		b = [[(random.choice([(70, 35, 25), (60, 60, 30), (60, 60, 30), (60, 60, 30)]))], [(random.choice([(70, 35, 25), (60, 60, 30), (60, 60, 30), (60, 60, 30)]))], [(random.choice([(70, 35, 25), (60, 60, 30), (60, 60, 30), (60, 60, 30)]))], [(random.choice([(70, 35, 25), (60, 60, 30), (60, 60, 30), (60, 60, 30)]))], [(random.choice([(70, 35, 25), (60, 60, 30), (60, 60, 30), (60, 60, 30)]))]]
-		b *= 2
-		self.board += [[b for _ in range(self.length)]]
-		c = [[(random.choice([(20, 40, 20), (60, 80, 30), (60, 80, 30), (60, 80, 30)]))], [(random.choice([(20, 40, 20), (60, 80, 30), (60, 80, 30), (60, 80, 30)]))], [(random.choice([(20, 40, 20), (60, 80, 30), (60, 80, 30), (60, 80, 30)]))], [(random.choice([(20, 40, 20), (60, 80, 30), (60, 80, 30), (60, 80, 30)]))], [(random.choice([(20, 40, 20), (60, 80, 30), (60, 80, 30), (60, 80, 30)]))]]
-		c *= 2
-		self.board += [[c for _ in range(self.length)] for _ in range(self.height // 2 - 1)]
-		self.sees = 6
+		self.lay = [[(60, 80, 30)] * 10 for _ in range(5)]
+		self.lay += [[(60, 60, 30)] * 10 for _ in range(4)]
+		self.lay += [[(225, 225, 225)] * 10]
+		self.board = [self.lay for _ in range(self.width)]
+		#self.board += [[[(60, 60, 30)] * self.width for _ in range(self.length)] for _ in range(self.height // 2 - 1)]
+		#self.board += [[[(60, 80, 30)] * self.width for _ in range(self.length)]]
 		self.cell_size = 15
-		self.x, self.y = 375, 375
+		self.mosx, self.mosy = 25, 25
+		self.x, self.y, self.z = 5, 5, 5
+		self.left, self.top = 31, 6
 
-	def set_view(self, cell_size):
-		self.cell_size = cell_size
-	
 	def render(self, surface):
 		self.surface = surface
-		for i in range(self.height):
-			for j in range(self.width):
-				pygame.draw.rect(self.surface, self.board[self.sees][i][j][0], (j * self.cell_size, i * self.cell_size, self.cell_size, self.cell_size), 7)
+		for i in range(self.height * 50):
+			for j in range(self.width * 50):
+				pygame.draw.rect(self.surface, (10, 10, 10), (j * self.cell_size, i * self.cell_size, self.cell_size, self.cell_size), 1)
+		self.cadr((self.mosx, self.mosy), self.surface)
 
 	def get_cell(self, mouse_pos):
 		x, y = mouse_pos
@@ -45,14 +39,17 @@ class Board:
 			if cell[0] >= 0 and cell[1] >= 0:
 				self.on_click(cell)
 
-	def cadr(self, coords):
-		self.x, self.y = coords
-		
-		
+	def cadr(self, coords, surface):
+		self.mosx, self.mosy = coords[0] // self.cell_size, coords[1] // self.cell_size
+		self.surface = surface
+		for i in range(self.height * 4):
+			for j in range(self.width * 4):
+				pygame.draw.rect(self.surface, self.board[self.z][self.x][self.y], (self.left * self.cell_size + j * self.cell_size, self.cell_size * self.top + i * self.cell_size, self.cell_size, self.cell_size), 5)
+
 
 pygame.init()
 pygame.display.set_caption('Инициализация игры')
-size = width, height = 500, 500
+size = width, height = 1530, 780
 screen = pygame.display.set_mode(size)
 board = Board()
 running = True
@@ -61,11 +58,10 @@ while running:
 	for event in pygame.event.get():
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			x, y = event.pos
-			drawing = True
 		if event.type == pygame.QUIT:
 			running = False
 		if event.type == pygame.MOUSEMOTION:
-			board.cadr(event.pos)
+			board.cadr(event.pos, screen)
 		if event.type == pygame.K_w:
 			pass
 		if event.type == pygame.K_a:

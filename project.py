@@ -3,6 +3,9 @@ import sys
 import pygame
 
 
+need = False
+
+
 def load_image(name, colorkey=None):
 	fullname = os.path.join('data', name)
 	# если файл не существует, то выходим
@@ -18,6 +21,40 @@ def load_image(name, colorkey=None):
 	else:
 		image = image.convert_alpha()
 	return image
+
+
+class Start:
+	def __init__(self):
+		self.width = 17
+		self.height = 17
+		self.cell_size = 30
+		self.x, self.y, self.z = 5, 5, 5
+
+	def get_cell(self, mouse_pos):
+		x, y = mouse_pos
+		if x in range(self.cell_size * self.width) and y in range(self.cell_size * self.height):
+			return x // self.cell_size, y // self.cell_size
+		return None
+
+	def on_click(self, mouse_pos):
+		cell = self.get_cell(mouse_pos)
+		if cell:
+			if cell[0] >= 0 and cell[1] >= 0:
+				x, y = cell
+				print(x, y)
+				if x in range(4, 10) and y in range(7, 10):
+					print(x, y)
+					return True
+
+	def render(self, surface):
+		self.surface = surface
+		for i in range(17):
+			for j in range(17):
+				pygame.draw.rect(self.surface, (10, 10, 10), (j * self.cell_size, i * self.cell_size, self.cell_size, self.cell_size), 1)
+		for i in range(7, 10):
+			for j in range(6, 11):
+				pygame.draw.rect(self.surface, (250, 250, 250), (j * self.cell_size, i * self.cell_size, self.cell_size, self.cell_size))
+
 
 
 class Board:
@@ -67,10 +104,10 @@ class Board:
 
 
 pygame.init()
-pygame.display.set_caption('Проектная игра')
-size = width, height = 1530, 780
+pygame.display.set_caption('Добро пожаловать! :)')
+size = width, height = 510, 510
 screen = pygame.display.set_mode(size)
-board = Board()
+start = Start()
 running = True
 pygame.mouse.set_visible(False)
 all_sprites = pygame.sprite.Group()
@@ -82,27 +119,68 @@ sprite.rect.x = 100
 sprite.rect.y = 100
 while running:
 	screen.fill((0, 0, 0))
-	board.render(screen)
+	start.render(screen)
 	for event in pygame.event.get():
 		if event.type == pygame.MOUSEBUTTONDOWN:
-			x, y = event.pos
+			print(start.on_click(event.pos))
+			if start.on_click(event.pos) == True:
+				running = False
+				need = True
+		if event.type == pygame.MOUSEBUTTONUP:
+			if start.on_click(event.pos) == True:
+				pass
 		if event.type == pygame.QUIT:
 			running = False
 		if event.type == pygame.MOUSEMOTION:
-			board.cadr(event.pos, screen)
 			if pygame.mouse.get_focused():
 				x, y = event.pos
 				sprite.rect.x = x
 				sprite.rect.y = y
 				all_sprites.draw(screen)
 				pygame.display.flip()
-		if event.type == pygame.K_w:
-			pass
-		if event.type == pygame.K_a:
-			pass
-		if event.type == pygame.K_s:
-			pass
-		if event.type == pygame.K_d:
-			pass
-		if event.type == pygame.K_SPACE:
-			pass
+pygame.quit()
+
+
+if need:
+        pygame.init()
+        pygame.display.set_caption('Проектная игра')
+        size = width, height = 1530, 780
+        screen = pygame.display.set_mode(size)
+        board = Board()
+        running = True
+        pygame.mouse.set_visible(False)
+        all_sprites = pygame.sprite.Group()
+        sprite = pygame.sprite.Sprite()
+        sprite.image = load_image("arrow.png", colorkey=-1)
+        sprite.rect = sprite.image.get_rect()
+        all_sprites.add(sprite)
+        sprite.rect.x = 100
+        sprite.rect.y = 100
+        while running:
+                screen.fill((0, 0, 0))
+                board.render(screen)
+                for event in pygame.event.get():
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                                x, y = event.pos
+                        if event.type == pygame.QUIT:
+                                running = False
+                        if event.type == pygame.MOUSEMOTION:
+                                board.cadr(event.pos, screen)
+                                if pygame.mouse.get_focused():
+                                        x, y = event.pos
+                                        sprite.rect.x = x
+                                        sprite.rect.y = y
+                                        all_sprites.draw(screen)
+                                        pygame.display.flip()
+                        if event.type == pygame.K_w:
+                                pass
+                        if event.type == pygame.K_a:
+                                pass
+                        if event.type == pygame.K_s:
+                                pass
+                        if event.type == pygame.K_d:
+                                pass
+                        if event.type == pygame.K_SPACE:
+                                pass
+        pygame.quit()
+

@@ -156,6 +156,13 @@ if need:
         all_sprites.add(sprite)
         sprite.rect.x = 100
         sprite.rect.y = 100
+        heroes = pygame.sprite.Group()
+        hero = pygame.sprite.Sprite()
+        hero.image = load_image("hero.png", colorkey=-1)
+        hero.rect = sprite.image.get_rect()
+        heroes.add(hero)
+        hero.rect.x = 300
+        hero.rect.y = 300
         while running:
                 screen.fill((0, 0, 0))
                 board.render(screen)
@@ -171,6 +178,7 @@ if need:
                                         sprite.rect.x = x
                                         sprite.rect.y = y
                                         all_sprites.draw(screen)
+                                        heroes.draw(screen)
                                         pygame.display.flip()
                         if event.type == pygame.K_w:
                                 pass
@@ -183,4 +191,3 @@ if need:
                         if event.type == pygame.K_SPACE:
                                 pass
         pygame.quit()
-
